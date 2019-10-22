@@ -9,15 +9,16 @@
 #ifndef PARTICLE_FILTER_H_
 #define PARTICLE_FILTER_H_
 
-#include <string>
 #include <array>
+#include <random>
+#include <string>
 #include "helper_functions.h"
 
+#define EPSILON 0.0001
 #define NUMBER_OF_PARTICLES 100U
 
 struct Particle
 {
-  int id;
   double x;
   double y;
   double theta;
@@ -46,27 +47,24 @@ public:
    * @param std_dev[] Array of dimension 3 [standard deviation of x [m], 
    *   standard deviation of y [m], standard deviation of yaw [rad]]
    */
-  void init(double x, double y, double theta, double std_dev[]);
+  void init(const double x, const double y, const double theta, const double std_dev[]);
 
   /**
    * prediction Predicts the state for the next time step
    *   using the process model.
    * @param delta_t Time between time step t and t+1 in measurements [s]
-   * @param std_pos[] Array of dimension 3 [standard deviation of x [m], 
-   *   standard deviation of y [m], standard deviation of yaw [rad]]
    * @param velocity Velocity of car from t to t+1 [m/s]
    * @param yaw_rate Yaw rate of car from t to t+1 [rad/s]
    */
-  void prediction(double delta_t, double std_pos[], double velocity,
-                  double yaw_rate);
+  void prediction(const double delta_t, const double velocity, const double yaw_rate);
 
   /**
    * dataAssociation Finds which observations correspond to which landmarks 
    *   (likely by using a nearest-neighbors data association).
-   * @param predicted Vector of predicted landmark observations
+   * @param predicted_measurements Vector of predicted landmark observations
    * @param observations Vector of landmark observations
    */
-  void dataAssociation(std::vector<LandmarkObs> predicted,
+  void dataAssociation(const std::vector<LandmarkObs> &predicted_measurements,
                        std::vector<LandmarkObs> &observations);
 
   /**
@@ -78,7 +76,7 @@ public:
    * @param observations Vector of landmark observations
    * @param map Map class containing map landmarks
    */
-  void updateWeights(double sensor_range, double std_landmark[],
+  void updateWeights(const double sensor_range, const double std_landmark[],
                      const std::vector<LandmarkObs> &observations,
                      const Map &map_landmarks);
 
@@ -121,6 +119,10 @@ private:
 
   // Vector of weights of all particles
   std::array<double, NUMBER_OF_PARTICLES> weights_;
+  // Gaussian Random Variables
+  std::normal_distribution<double> x_grv_;
+  std::normal_distribution<double> y_grv_;
+  std::normal_distribution<double> theta_grv_;
 };
 
 #endif // PARTICLE_FILTER_H_

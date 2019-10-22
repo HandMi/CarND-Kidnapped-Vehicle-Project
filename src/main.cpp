@@ -34,13 +34,13 @@ int main()
   uWS::Hub h;
 
   // Set up parameters here
-  double delta_t = 0.1;     // Time elapsed between measurements [sec]
-  double sensor_range = 50; // Sensor range [m]
+  const double delta_t = 0.1;     // Time elapsed between measurements [sec]
+  const double sensor_range = 50; // Sensor range [m]
 
   // GPS measurement uncertainty [x [m], y [m], theta [rad]]
-  double sigma_pos[3] = {0.3, 0.3, 0.01};
+  const double sigma_pos[3] = {0.3, 0.3, 0.01};
   // Landmark measurement uncertainty [x [m], y [m]]
-  double sigma_landmark[2] = {0.3, 0.3};
+  const double sigma_landmark[2] = {0.3, 0.3};
 
   // Read map data
   Map map;
@@ -53,8 +53,8 @@ int main()
   // Create particle filter
   ParticleFilter pf;
 
-  h.onMessage([&pf, &map, &delta_t, &sensor_range, &sigma_pos, &sigma_landmark](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
-                                                                                uWS::OpCode opCode) {
+  h.onMessage([&](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+                  uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -87,7 +87,7 @@ int main()
             double previous_velocity = std::stod(j[1]["previous_velocity"].get<string>());
             double previous_yawrate = std::stod(j[1]["previous_yawrate"].get<string>());
 
-            pf.prediction(delta_t, sigma_pos, previous_velocity, previous_yawrate);
+            pf.prediction(delta_t, previous_velocity, previous_yawrate);
           }
 
           // receive noisy observation data from the simulator
@@ -129,7 +129,7 @@ int main()
           Particle best_particle;
           double highest_weight = -1.0;
           double weight_sum = 0.0;
-          for (auto particle : pf.particles_)
+          for (auto &particle : pf.particles_)
           {
             if (particle.weight > highest_weight)
             {

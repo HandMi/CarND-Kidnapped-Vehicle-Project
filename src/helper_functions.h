@@ -57,9 +57,21 @@ struct LandmarkObs
  * @param (x2,y2) x and y coordinates of second point
  * @output Euclidean distance between two 2D points
  */
-inline double dist(double x1, double y1, double x2, double y2)
+inline double dist(const double x1, const double y1, const double x2, const double y2)
 {
   return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+}
+
+/**
+ * Computes the Euclidean distance squared between two 2D points.
+ * @param (x1,y1) x and y coordinates of first point
+ * @param (x2,y2) x and y coordinates of second point
+ * @param std array with standard deviations
+ * @output Euclidean distance squared between two 2D points
+ */
+inline double dist2(const double x1, const double y1, const double x2, const double y2, const double std[2])
+{
+  return (x2 - x1) * (x2 - x1)/(std[0]*std[0]) + (y2 - y1) * (y2 - y1)/(std[1]*std[1]);
 }
 
 /**
