@@ -123,7 +123,6 @@ void ParticleFilter::updateWeights(const double sensor_range, const double std_l
 
   for (auto &particle : particles_)
   {
-    std::cout << "new particle" << std::endl;
     auto transformed_observations(observations);
     // Transform to map coordinates
     for (auto &observation : transformed_observations)
